@@ -1,22 +1,27 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';   // <— ICON
+import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import AnnouncementsScreen from '../screens/AnnouncementsScreen';
 import AgendaScreen from '../screens/AgendaScreen';
 import SchoolProfileScreen from '../screens/SchoolProfileScreen';
+import AdminLoginScreen from '../screens/AdminLoginScreen';
+import { AuthContext } from '../../App';
 
 export type RootTabParamList = {
   Home: undefined;
   Announcements: undefined;
   Agenda: undefined;
   Profile: undefined;
+  Admin: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
 const RootNavigator = () => {
+  const auth = useContext(AuthContext);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -45,9 +50,10 @@ const RootNavigator = () => {
             iconName = focused ? 'megaphone' : 'megaphone-outline';
           } else if (route.name === 'Agenda') {
             iconName = focused ? 'calendar' : 'calendar-outline';
-          } else {
-            // Profile
+          } else if (route.name === 'Profile') {
             iconName = focused ? 'school' : 'school-outline';
+          } else {
+            iconName = focused ? 'lock-open' : 'lock-closed';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -57,11 +63,22 @@ const RootNavigator = () => {
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Beranda' }} />
       <Tab.Screen
         name="Announcements"
-        component={AnnouncementsScreen}
         options={{ title: 'Pengumuman' }}
-      />
-      <Tab.Screen name="Agenda" component={AgendaScreen} options={{ title: 'Agenda' }} />
+      >
+        {() => <AnnouncementsScreen isAdmin={auth?.isAdmin ?? false} />}
+      </Tab.Screen>
+      <Tab.Screen
+        name="Agenda"
+        options={{ title: 'Agenda' }}
+      >
+        {() => <AgendaScreen isAdmin={auth?.isAdmin ?? false} />}
+      </Tab.Screen>
       <Tab.Screen name="Profile" component={SchoolProfileScreen} options={{ title: 'Profil' }} />
+      <Tab.Screen
+        name="Admin"
+        component={AdminLoginScreen}
+        options={{ title: auth?.isAdmin ? 'Admin' : 'Login' }}
+      />
     </Tab.Navigator>
   );
 };
