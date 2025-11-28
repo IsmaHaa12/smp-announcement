@@ -1,8 +1,8 @@
 {
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
     "jsx": "react-jsx",
     "strict": true,
     "allowJs": true,
@@ -10,6 +10,5 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "baseUrl": "."
-  },
-  "extends": "expo/tsconfig.base"
+  }
 }

@@ -1,14 +1,45 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnnouncementCard from '../components/AnnouncementCard';
-import announcementsData from '../data/announcements.json';
+import defaultAnnouncements from '../data/announcements.json';
+
+type Announcement = {
+  id: string;
+  title: string;
+  date: string;
+  category: string;
+  content?: string;
+};
+
+const STORAGE_KEY = 'announcements';
 
 const HomeScreen = () => {
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          setAnnouncements(JSON.parse(stored));
+        } else {
+          setAnnouncements(defaultAnnouncements as Announcement[]);
+        }
+      } catch (e) {
+        console.log('Error loading announcements for home', e);
+        setAnnouncements(defaultAnnouncements as Announcement[]);
+      }
+    };
+
+    loadData();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Pengumuman Terbaru</Text>
+      <Text style={styles.header}>Pengumuman</Text>
       <FlatList
-        data={announcementsData.slice(0, 3)}
+        data={announcements}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <AnnouncementCard
