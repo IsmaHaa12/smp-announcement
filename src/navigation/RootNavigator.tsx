@@ -27,7 +27,7 @@ const RootNavigator = () => {
       screenOptions={({ route }) => ({
         headerStyle: { backgroundColor: '#DDF3C8' },
         headerTitleAlign: 'center',
-        headerTitle: 'SMPN 2 Ayah',
+        headerTitle: 'SMP N 2 Ayah',
         headerLeft: () => (
           <Image
             source={require('../assets/logo-smpn2ayah.png')}
