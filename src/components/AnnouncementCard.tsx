@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Text, StyleSheet, Animated, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // npx expo install expo-linear-gradient
+import { LinearGradient } from 'expo-linear-gradient';
 
 type Props = {
   title: string;
