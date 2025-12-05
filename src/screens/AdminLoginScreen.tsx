@@ -81,5 +81,4 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: '#fff', fontWeight: '600' },
 });
-
 export default AdminLoginScreen;
