@@ -23,7 +23,6 @@ export default function App() {
   }, []);
 
   const loginAsAdmin = async (password: string) => {
-    // ganti "admin123" dengan password yang kamu mau
     if (password === 'admin123') {
       setIsAdmin(true);
       await AsyncStorage.setItem('isAdmin', 'true');
