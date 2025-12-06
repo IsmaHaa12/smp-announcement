@@ -177,7 +177,7 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
         />
       </Animated.View>
 
-      {/* FAB tambah agenda hanya untuk admin */}
+
       {isAdmin && (
         <TouchableOpacity
           style={styles.fab}
