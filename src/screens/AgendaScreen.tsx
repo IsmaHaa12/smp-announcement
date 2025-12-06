@@ -177,7 +177,6 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
         />
       </Animated.View>
 
-
       {isAdmin && (
         <TouchableOpacity
           style={styles.fab}
