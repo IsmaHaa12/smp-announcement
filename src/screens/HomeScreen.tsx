@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnnouncementCard from '../components/AnnouncementCard';
-import defaultAnnouncements from '../data/announcements.json';
+import { db } from '../firebaseConfig';
+import {
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+} from 'firebase/firestore';
 
 type Announcement = {
   id: string;
@@ -12,34 +17,37 @@ type Announcement = {
   content?: string;
 };
 
-const STORAGE_KEY = 'announcements';
-
 const HomeScreen = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          setAnnouncements(JSON.parse(stored));
-        } else {
-          setAnnouncements(defaultAnnouncements as Announcement[]);
-        }
-      } catch (e) {
-        console.log('Error loading announcements for home', e);
-        setAnnouncements(defaultAnnouncements as Announcement[]);
-      }
-    };
+    const q = query(
+      collection(db, 'announcements'),
+      orderBy('date', 'desc')
+    );
 
-    loadData();
+    const unsub = onSnapshot(q, (snapshot) => {
+      const items: Announcement[] = snapshot.docs.map((d) => ({
+        id: d.id,
+        title: d.data().title,
+        date: d.data().date,
+        category: d.data().category,
+        content: d.data().content,
+      }));
+      setAnnouncements(items);
+    });
+
+    return () => unsub();
   }, []);
+
+  // Kalau mau batasi 3 terbaru saja, pakai: const latest = announcements.slice(0, 3);
+  const latest = announcements; // tampilkan semua
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Pengumuman</Text>
       <FlatList
-        data={announcements}
+        data={latest}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <AnnouncementCard
@@ -63,4 +71,5 @@ const styles = StyleSheet.create({
     color: '#123028',
   },
 });
+
 export default HomeScreen;

@@ -8,9 +8,18 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnnouncementCard from '../components/AnnouncementCard';
-import defaultAnnouncements from '../data/announcements.json';
+import { db } from '../firebaseConfig';
+import {
+  collection,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  orderBy,
+  query,
+} from 'firebase/firestore';
 
 type Announcement = {
   id: string;
@@ -24,8 +33,6 @@ type Props = {
   isAdmin: boolean;
 };
 
-const STORAGE_KEY = 'announcements';
-
 const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
   const [search, setSearch] = useState('');
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -38,63 +45,53 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     content: '',
   });
 
+  // === LOAD DATA DARI FIRESTORE (REALTIME) ===
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          setAnnouncements(JSON.parse(stored));
-        } else {
-          setAnnouncements(defaultAnnouncements as Announcement[]);
-          await AsyncStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(defaultAnnouncements)
-          );
-        }
-      } catch (e) {
-        console.log('Error loading announcements', e);
-        setAnnouncements(defaultAnnouncements as Announcement[]);
-      }
-    };
+    const q = query(
+      collection(db, 'announcements'),
+      orderBy('date', 'desc')
+    );
 
-    loadData();
+    const unsub = onSnapshot(q, (snapshot) => {
+  console.log('SNAPSHOT SIZE', snapshot.size);
+  const items: Announcement[] = snapshot.docs.map((d) => ({
+    id: d.id,
+    title: d.data().title,
+    date: d.data().date,
+    category: d.data().category,
+    content: d.data().content,
+  }));
+  setAnnouncements(items);
+});
+
+
+    return () => unsub();
   }, []);
 
-  const saveAnnouncements = async (data: Announcement[]) => {
-    setAnnouncements(data);
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.log('Error saving announcements', e);
-    }
-  };
-
-  const handleAddOrEdit = () => {
+  // === TAMBAH / EDIT KE FIRESTORE ===
+  const handleAddOrEdit = async () => {
     if (!form.title || !form.date) return;
+    if (!isAdmin) return;
 
-    if (editingId) {
-      const updated = announcements.map((a) =>
-        a.id === editingId
-          ? {
-              ...a,
-              title: form.title,
-              date: form.date,
-              category: form.category || 'Umum',
-              content: form.content,
-            }
-          : a
-      );
-      saveAnnouncements(updated);
-    } else {
-      const newItem: Announcement = {
-        id: Date.now().toString(),
-        title: form.title,
-        date: form.date,
-        category: form.category || 'Umum',
-        content: form.content,
-      };
-      const updated = [newItem, ...announcements];
-      saveAnnouncements(updated);
+    try {
+      if (editingId) {
+        const ref = doc(db, 'announcements', editingId);
+        await updateDoc(ref, {
+          title: form.title,
+          date: form.date,
+          category: form.category || 'Umum',
+          content: form.content,
+        });
+      } else {
+        await addDoc(collection(db, 'announcements'), {
+          title: form.title,
+          date: form.date,
+          category: form.category || 'Umum',
+          content: form.content,
+        });
+      }
+    } catch (e) {
+      console.log('Error saving announcement', e);
     }
 
     setForm({ title: '', date: '', category: '', content: '' });
@@ -102,9 +99,15 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     setModalVisible(false);
   };
 
-  const handleDelete = (id: string) => {
-    const updated = announcements.filter((a) => a.id !== id);
-    saveAnnouncements(updated);
+  // === HAPUS DI FIRESTORE ===
+  const handleDelete = async (id: string) => {
+    if (!isAdmin) return;
+    try {
+      const ref = doc(db, 'announcements', id);
+      await deleteDoc(ref);
+    } catch (e) {
+      console.log('Error deleting announcement', e);
+    }
   };
 
   const openEdit = (item: Announcement) => {
@@ -160,6 +163,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
         )}
       />
 
+      {/* FAB tambah hanya admin */}
       {isAdmin && (
         <TouchableOpacity
           style={styles.fab}
@@ -173,6 +177,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
         </TouchableOpacity>
       )}
 
+      {/* Modal tambah / edit */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -315,4 +320,5 @@ const styles = StyleSheet.create({
   buttonSave: { backgroundColor: '#1F6FB2' },
   buttonText: { color: '#fff', fontWeight: '600' },
 });
+
 export default AnnouncementsScreen;

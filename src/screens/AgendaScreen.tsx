@@ -10,20 +10,25 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import defaultEvents from '../data/events.json';
+import { db } from '../firebaseConfig';
+import {
+  collection,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore';
 
 type Event = {
   id: string;
   title: string;
-  date: string;
+  date: string; // yyyy-mm-dd
 };
 
 type Props = {
   isAdmin: boolean;
 };
-
-const STORAGE_KEY = 'events';
 
 const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -33,36 +38,19 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ title: '', date: '' });
 
+  // === LISTEN DATA EVENTS DARI FIRESTORE ===
   useEffect(() => {
-    const loadEvents = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          setEvents(JSON.parse(stored));
-        } else {
-          setEvents(defaultEvents as Event[]);
-          await AsyncStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(defaultEvents)
-          );
-        }
-      } catch (e) {
-        console.log('Error loading events', e);
-        setEvents(defaultEvents as Event[]);
-      }
-    };
+    const unsub = onSnapshot(collection(db, 'events'), (snapshot) => {
+      const items: Event[] = snapshot.docs.map((d) => ({
+        id: d.id,
+        title: d.data().title,
+        date: d.data().date,
+      }));
+      setEvents(items);
+    });
 
-    loadEvents();
+    return () => unsub();
   }, []);
-
-  const saveEvents = async (data: Event[]) => {
-    setEvents(data);
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.log('Error saving events', e);
-    }
-  };
 
   const markedDates = events.reduce((acc: any, event: Event) => {
     acc[event.date] = {
@@ -88,22 +76,26 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
     }).start();
   }, [selectedDate, opacity]);
 
-  const handleAddOrEdit = () => {
+  // === TAMBAH / EDIT EVENT DI FIRESTORE ===
+  const handleAddOrEdit = async () => {
     if (!form.title || !form.date) return;
+    if (!isAdmin) return;
 
-    if (editingId) {
-      const updated = events.map((e) =>
-        e.id === editingId ? { ...e, title: form.title, date: form.date } : e
-      );
-      saveEvents(updated);
-    } else {
-      const newItem: Event = {
-        id: Date.now().toString(),
-        title: form.title,
-        date: form.date,
-      };
-      const updated = [...events, newItem];
-      saveEvents(updated);
+    try {
+      if (editingId) {
+        const ref = doc(db, 'events', editingId);
+        await updateDoc(ref, {
+          title: form.title,
+          date: form.date,
+        });
+      } else {
+        await addDoc(collection(db, 'events'), {
+          title: form.title,
+          date: form.date,
+        });
+      }
+    } catch (e) {
+      console.log('Error saving event', e);
     }
 
     setForm({ title: '', date: '' });
@@ -111,9 +103,15 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
     setModalVisible(false);
   };
 
-  const handleDelete = (id: string) => {
-    const updated = events.filter((e) => e.id !== id);
-    saveEvents(updated);
+  // === HAPUS EVENT ===
+  const handleDelete = async (id: string) => {
+    if (!isAdmin) return;
+    try {
+      const ref = doc(db, 'events', id);
+      await deleteDoc(ref);
+    } catch (e) {
+      console.log('Error deleting event', e);
+    }
   };
 
   const openEdit = (item: Event) => {
@@ -177,12 +175,17 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
         />
       </Animated.View>
 
+      {/* FAB tambah hanya admin */}
       {isAdmin && (
         <TouchableOpacity
           style={styles.fab}
           onPress={() => {
             setEditingId(null);
-            setForm((prev) => ({ ...prev, title: '', date: selectedDate || '' }));
+            setForm((prev) => ({
+              ...prev,
+              title: '',
+              date: selectedDate || '',
+            }));
             setModalVisible(true);
           }}
         >
@@ -190,6 +193,7 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
         </TouchableOpacity>
       )}
 
+      {/* Modal tambah / edit agenda */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -321,4 +325,5 @@ const styles = StyleSheet.create({
   buttonSave: { backgroundColor: '#1F6FB2' },
   buttonText: { color: '#fff', fontWeight: '600' },
 });
+
 export default AgendaScreen;

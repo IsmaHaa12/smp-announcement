@@ -20,7 +20,7 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
-const ADMIN_PASSWORD = 'admin123'; // ganti kalau mau
+const ADMIN_PASSWORD = 'Asewrusrek123'; // ganti kalau mau
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const auth = useContext(AuthContext);

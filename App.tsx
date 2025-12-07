@@ -38,7 +38,7 @@ export default function App() {
   }, []);
 
   const loginAsAdmin = async (password: string) => {
-    if (password === 'admin123') {
+    if (password === 'Asewrusrek123') {
       setIsAdmin(true);
       await AsyncStorage.setItem('isAdmin', 'true');
       await AsyncStorage.setItem('isGuest', 'false');
