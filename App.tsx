@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RootNavigator from './src/navigation/RootNavigator';
+import WelcomeScreen from './src/screens/WelcomeScreen';
 
 export type AuthContextType = {
   isAdmin: boolean;
@@ -11,13 +13,26 @@ export type AuthContextType = {
 
 export const AuthContext = React.createContext<AuthContextType | null>(null);
 
+type RootStackParamList = {
+  Welcome: undefined;
+  Main: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
 export default function App() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [initialRoute, setInitialRoute] = useState<'Welcome' | 'Main'>('Welcome');
 
   useEffect(() => {
     const load = async () => {
-      const stored = await AsyncStorage.getItem('isAdmin');
-      setIsAdmin(stored === 'true');
+      const storedAdmin = await AsyncStorage.getItem('isAdmin');
+      const storedGuest = await AsyncStorage.getItem('isGuest');
+      setIsAdmin(storedAdmin === 'true');
+
+      if (storedAdmin === 'true' || storedGuest === 'true') {
+        setInitialRoute('Main');
+      }
     };
     load();
   }, []);
@@ -26,6 +41,7 @@ export default function App() {
     if (password === 'admin123') {
       setIsAdmin(true);
       await AsyncStorage.setItem('isAdmin', 'true');
+      await AsyncStorage.setItem('isGuest', 'false');
       return true;
     }
     return false;
@@ -39,7 +55,13 @@ export default function App() {
   return (
     <AuthContext.Provider value={{ isAdmin, loginAsAdmin, logout }}>
       <NavigationContainer>
-        <RootNavigator />
+        <Stack.Navigator
+          initialRouteName={initialRoute}
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Main" component={RootNavigator} />
+        </Stack.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>
   );

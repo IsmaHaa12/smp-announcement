@@ -60,25 +60,40 @@ const RootNavigator = () => {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Beranda' }} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ title: 'Beranda' }}
+      />
+
       <Tab.Screen
         name="Announcements"
         options={{ title: 'Pengumuman' }}
       >
         {() => <AnnouncementsScreen isAdmin={auth?.isAdmin ?? false} />}
       </Tab.Screen>
+
       <Tab.Screen
         name="Agenda"
         options={{ title: 'Agenda' }}
       >
         {() => <AgendaScreen isAdmin={auth?.isAdmin ?? false} />}
       </Tab.Screen>
-      <Tab.Screen name="Profile" component={SchoolProfileScreen} options={{ title: 'Profil' }} />
+
       <Tab.Screen
-        name="Admin"
-        component={AdminLoginScreen}
-        options={{ title: auth?.isAdmin ? 'Admin' : 'Login' }}
+        name="Profile"
+        component={SchoolProfileScreen}
+        options={{ title: 'Profil' }}
       />
+
+      {/* Tab Admin hanya muncul kalau admin sudah login */}
+      {auth?.isAdmin && (
+        <Tab.Screen
+          name="Admin"
+          component={AdminLoginScreen}
+          options={{ title: 'Admin' }}
+        />
+      )}
     </Tab.Navigator>
   );
 };
