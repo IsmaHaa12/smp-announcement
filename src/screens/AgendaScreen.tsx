@@ -16,7 +16,7 @@ import defaultEvents from '../data/events.json';
 type Event = {
   id: string;
   title: string;
-  date: string; // yyyy
+  date: string;
 };
 
 type Props = {
