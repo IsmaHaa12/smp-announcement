@@ -38,14 +38,17 @@ export default function App() {
   }, []);
 
   const loginAsAdmin = async (password: string) => {
-    if (password === 'Asewrusrek123') {
-      setIsAdmin(true);
-      await AsyncStorage.setItem('isAdmin', 'true');
-      await AsyncStorage.setItem('isGuest', 'false');
-      return true;
-    }
-    return false;
-  };
+  const ADMIN_PASSWORD = process.env.EXPO_PUBLIC_ADMIN_PASSWORD;
+
+  if (password === ADMIN_PASSWORD) {
+    setIsAdmin(true);
+    await AsyncStorage.setItem('isAdmin', 'true');
+    await AsyncStorage.setItem('isGuest', 'false');
+    return true;
+  }
+  return false;
+};
+
 
   const logout = async () => {
     setIsAdmin(false);
