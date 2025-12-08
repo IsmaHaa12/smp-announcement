@@ -20,7 +20,8 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
-const ADMIN_PASSWORD = ''; // ganti kalau mau
+// ambil password admin dari .env
+const ADMIN_PASSWORD = process.env.EXPO_PUBLIC_ADMIN_PASSWORD || '';
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const auth = useContext(AuthContext);
@@ -30,21 +31,27 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const handleGuest = async () => {
     await AsyncStorage.setItem('isGuest', 'true');
     await AsyncStorage.setItem('isAdmin', 'false');
-    // mode umum: tidak bisa edit/hapus
     navigation.replace('Main');
   };
 
   const handleAdminLogin = async () => {
-    if (!auth) return;
-    const ok = await auth.loginAsAdmin(password);
-    if (!ok) {
+    // cek password dengan nilai dari .env
+    if (password !== ADMIN_PASSWORD) {
       Alert.alert('Gagal', 'Password admin salah');
-    } else {
-      await AsyncStorage.setItem('isGuest', 'false');
-      setPassword('');
-      setModalVisible(false);
-      navigation.replace('Main');
+      return;
     }
+
+    // update context (kalau ada) + AsyncStorage
+    if (auth) {
+      await auth.loginAsAdmin(password);
+    } else {
+      await AsyncStorage.setItem('isAdmin', 'true');
+      await AsyncStorage.setItem('isGuest', 'false');
+    }
+
+    setPassword('');
+    setModalVisible(false);
+    navigation.replace('Main');
   };
 
   return (
