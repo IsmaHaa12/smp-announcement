@@ -35,7 +35,6 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleAdminLogin = async () => {
-    // cek password dengan nilai dari .env
     if (password !== ADMIN_PASSWORD) {
       Alert.alert('Gagal', 'Password admin salah');
       return;
