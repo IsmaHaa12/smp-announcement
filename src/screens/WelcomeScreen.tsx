@@ -41,7 +41,6 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    // update context (kalau ada) + AsyncStorage
     if (auth) {
       await auth.loginAsAdmin(password);
     } else {
