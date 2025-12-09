@@ -78,7 +78,6 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.buttonText}>Masuk</Text>
       </TouchableOpacity>
 
-      {/* Modal input password admin */}
       <Modal
         visible={modalVisible}
         animationType="slide"
