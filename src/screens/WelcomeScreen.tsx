@@ -68,14 +68,14 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         style={[styles.button, styles.adminButton]}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.buttonText}>Login Admin</Text>
+        <Text style={styles.buttonText}>Mode Admin</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[styles.button, styles.guestButton]}
         onPress={handleGuest}
       >
-        <Text style={styles.buttonText}>Login Umum</Text>
+        <Text style={styles.buttonText}>Masuk</Text>
       </TouchableOpacity>
 
       {/* Modal input password admin */}
