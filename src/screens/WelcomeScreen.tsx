@@ -91,6 +91,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
             <TextInput
               style={styles.input}
               placeholder="Password admin"
+              placeholderTextColor="#7A9585"
               secureTextEntry
               value={password}
               onChangeText={setPassword}

@@ -53,17 +53,16 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     );
 
     const unsub = onSnapshot(q, (snapshot) => {
-  console.log('SNAPSHOT SIZE', snapshot.size);
-  const items: Announcement[] = snapshot.docs.map((d) => ({
-    id: d.id,
-    title: d.data().title,
-    date: d.data().date,
-    category: d.data().category,
-    content: d.data().content,
-  }));
-  setAnnouncements(items);
-});
-
+      console.log('SNAPSHOT SIZE', snapshot.size);
+      const items: Announcement[] = snapshot.docs.map((d) => ({
+        id: d.id,
+        title: d.data().title,
+        date: d.data().date,
+        category: d.data().category,
+        content: d.data().content,
+      }));
+      setAnnouncements(items);
+    });
 
     return () => unsub();
   }, []);
@@ -195,24 +194,28 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
             <TextInput
               style={styles.input}
               placeholder="Judul"
+              placeholderTextColor="#7A9585"
               value={form.title}
               onChangeText={(text) => setForm({ ...form, title: text })}
             />
             <TextInput
               style={styles.input}
               placeholder="Tanggal (yyyy-mm-dd)"
+              placeholderTextColor="#7A9585"
               value={form.date}
               onChangeText={(text) => setForm({ ...form, date: text })}
             />
             <TextInput
               style={styles.input}
               placeholder="Kategori (mis. Akademik/Kegiatan)"
+              placeholderTextColor="#7A9585"
               value={form.category}
               onChangeText={(text) => setForm({ ...form, category: text })}
             />
             <TextInput
               style={[styles.input, { height: 80 }]}
               placeholder="Isi pengumuman"
+              placeholderTextColor="#7A9585"
               multiline
               value={form.content}
               onChangeText={(text) => setForm({ ...form, content: text })}

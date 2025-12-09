@@ -211,12 +211,14 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
             <TextInput
               style={styles.input}
               placeholder="Judul kegiatan"
+              placeholderTextColor="#7A9585"
               value={form.title}
               onChangeText={(text) => setForm({ ...form, title: text })}
             />
             <TextInput
               style={styles.input}
               placeholder="Tanggal (yyyy-mm-dd)"
+              placeholderTextColor="#7A9585"
               value={form.date}
               onChangeText={(text) => setForm({ ...form, date: text })}
             />
