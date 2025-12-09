@@ -41,7 +41,7 @@ const HomeScreen = () => {
   }, []);
 
   // Kalau mau batasi 3 terbaru saja, pakai: const latest = announcements.slice(0, 3);
-  const latest = announcements; // tampilkan semua
+  const latest = announcements;
 
   return (
     <View style={styles.container}>
