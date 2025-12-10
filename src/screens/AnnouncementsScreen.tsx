@@ -162,7 +162,6 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
         )}
       />
 
-      {/* FAB tambah hanya admin */}
       {isAdmin && (
         <TouchableOpacity
           style={styles.fab}
