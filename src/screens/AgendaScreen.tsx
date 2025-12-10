@@ -193,7 +193,6 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
         </TouchableOpacity>
       )}
 
-      {/* Modal tambah / edit agenda */}
       <Modal
         visible={modalVisible}
         animationType="slide"
