@@ -38,7 +38,6 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ title: '', date: '' });
 
-  // === LISTEN DATA EVENTS DARI FIRESTORE ===
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'events'), (snapshot) => {
       const items: Event[] = snapshot.docs.map((d) => ({
