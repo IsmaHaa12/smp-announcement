@@ -98,7 +98,6 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     setModalVisible(false);
   };
 
-  // === HAPUS DI FIRESTORE ===
   const handleDelete = async (id: string) => {
     if (!isAdmin) return;
     try {
