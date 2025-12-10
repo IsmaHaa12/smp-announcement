@@ -76,7 +76,6 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
     }).start();
   }, [selectedDate, opacity]);
 
-  // === TAMBAH / EDIT EVENT DI FIRESTORE ===
   const handleAddOrEdit = async () => {
     if (!form.title || !form.date) return;
     if (!isAdmin) return;
