@@ -103,7 +103,6 @@ const AgendaScreen: React.FC<Props> = ({ isAdmin }) => {
     setModalVisible(false);
   };
 
-  // === HAPUS EVENT ===
   const handleDelete = async (id: string) => {
     if (!isAdmin) return;
     try {
