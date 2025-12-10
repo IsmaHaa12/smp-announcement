@@ -40,7 +40,6 @@ const HomeScreen = () => {
     return () => unsub();
   }, []);
 
-  // Kalau mau batasi 3 terbaru saja, pakai: const latest = announcements.slice(0, 3);
   const latest = announcements;
 
   return (
