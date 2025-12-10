@@ -45,7 +45,6 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     content: '',
   });
 
-  // === LOAD DATA DARI FIRESTORE (REALTIME) ===
   useEffect(() => {
     const q = query(
       collection(db, 'announcements'),
