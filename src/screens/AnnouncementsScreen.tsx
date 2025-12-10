@@ -176,7 +176,6 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
         </TouchableOpacity>
       )}
 
-      {/* Modal tambah / edit */}
       <Modal
         visible={modalVisible}
         animationType="slide"
