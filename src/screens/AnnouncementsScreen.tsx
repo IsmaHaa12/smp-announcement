@@ -67,7 +67,6 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     return () => unsub();
   }, []);
 
-  // === TAMBAH / EDIT KE FIRESTORE ===
   const handleAddOrEdit = async () => {
     if (!form.title || !form.date) return;
     if (!isAdmin) return;
