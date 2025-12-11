@@ -19,12 +19,16 @@ import {
   doc,
   orderBy,
   query,
+  Timestamp,
 } from 'firebase/firestore';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 
 type Announcement = {
   id: string;
   title: string;
-  date: string;
+  date: string; // buat tampilan "yyyy-mm-dd"
   category: string;
   content?: string;
 };
@@ -40,11 +44,14 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: '',
-    date: '',
+    dateText: '',        // string buat TextInput
+    dateValue: new Date(), // Date asli buat Firestore
     category: '',
     content: '',
   });
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
+  // === LOAD DATA DARI FIRESTORE (REALTIME) ===
   useEffect(() => {
     const q = query(
       collection(db, 'announcements'),
@@ -53,49 +60,82 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
 
     const unsub = onSnapshot(q, (snapshot) => {
       console.log('SNAPSHOT SIZE', snapshot.size);
-      const items: Announcement[] = snapshot.docs.map((d) => ({
-        id: d.id,
-        title: d.data().title,
-        date: d.data().date,
-        category: d.data().category,
-        content: d.data().content,
-      }));
+      const items: Announcement[] = snapshot.docs.map((d) => {
+        const data = d.data() as any;
+
+        let dateStr = '';
+        if (data.date?.toDate) {
+          const dateObj = data.date.toDate(); // Timestamp -> Date
+          dateStr = dateObj.toISOString().slice(0, 10); // yyyy-mm-dd
+        } else if (typeof data.date === 'string') {
+          dateStr = data.date;
+        }
+
+        return {
+          id: d.id,
+          title: data.title,
+          date: dateStr,
+          category: data.category,
+          content: data.content,
+        };
+      });
       setAnnouncements(items);
     });
 
     return () => unsub();
   }, []);
 
+  // === HANDLE DATE PICKER CHANGE ===
+  const onChangeDate = (event: DateTimePickerEvent, selectedDate?: Date) => {
+    if (event.type === 'dismissed') {
+      setShowDatePicker(false);
+      return;
+    }
+    const currentDate = selectedDate || form.dateValue;
+    const dateStr = currentDate.toISOString().slice(0, 10); // yyyy-mm-dd
+    setForm((prev) => ({
+      ...prev,
+      dateValue: currentDate,
+      dateText: dateStr,
+    }));
+    setShowDatePicker(false);
+  };
+
+  // === TAMBAH / EDIT KE FIRESTORE ===
   const handleAddOrEdit = async () => {
-    if (!form.title || !form.date) return;
+    if (!form.title || !form.dateText) return;
     if (!isAdmin) return;
 
     try {
+      const payload = {
+        title: form.title,
+        date: Timestamp.fromDate(form.dateValue),
+        category: form.category || 'Umum',
+        content: form.content,
+      };
+
       if (editingId) {
         const ref = doc(db, 'announcements', editingId);
-        await updateDoc(ref, {
-          title: form.title,
-          date: form.date,
-          category: form.category || 'Umum',
-          content: form.content,
-        });
+        await updateDoc(ref, payload);
       } else {
-        await addDoc(collection(db, 'announcements'), {
-          title: form.title,
-          date: form.date,
-          category: form.category || 'Umum',
-          content: form.content,
-        });
+        await addDoc(collection(db, 'announcements'), payload);
       }
     } catch (e) {
       console.log('Error saving announcement', e);
     }
 
-    setForm({ title: '', date: '', category: '', content: '' });
+    setForm({
+      title: '',
+      dateText: '',
+      dateValue: new Date(),
+      category: '',
+      content: '',
+    });
     setEditingId(null);
     setModalVisible(false);
   };
 
+  // === HAPUS DI FIRESTORE ===
   const handleDelete = async (id: string) => {
     if (!isAdmin) return;
     try {
@@ -107,10 +147,20 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
   };
 
   const openEdit = (item: Announcement) => {
+    // saat edit, pakai string tanggal dari item.date
+    let dateObj = new Date();
+    if (item.date) {
+      const parsed = new Date(item.date);
+      if (!isNaN(parsed.getTime())) {
+        dateObj = parsed;
+      }
+    }
+
     setEditingId(item.id);
     setForm({
       title: item.title,
-      date: item.date,
+      dateText: item.date,
+      dateValue: dateObj,
       category: item.category,
       content: item.content ?? '',
     });
@@ -159,12 +209,19 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
         )}
       />
 
+      {/* FAB tambah hanya admin */}
       {isAdmin && (
         <TouchableOpacity
           style={styles.fab}
           onPress={() => {
             setEditingId(null);
-            setForm({ title: '', date: '', category: '', content: '' });
+            setForm({
+              title: '',
+              dateText: '',
+              dateValue: new Date(),
+              category: '',
+              content: '',
+            });
             setModalVisible(true);
           }}
         >
@@ -172,6 +229,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
         </TouchableOpacity>
       )}
 
+      {/* Modal tambah / edit */}
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -193,13 +251,16 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
               value={form.title}
               onChangeText={(text) => setForm({ ...form, title: text })}
             />
+            {/* Input tanggal pakai DatePicker */}
             <TextInput
               style={styles.input}
-              placeholder="Tanggal (yyyy-mm-dd)"
+              placeholder="Tanggal (pilih dari kalender)"
               placeholderTextColor="#7A9585"
-              value={form.date}
-              onChangeText={(text) => setForm({ ...form, date: text })}
+              value={form.dateText}
+              onPressIn={() => setShowDatePicker(true)}
+              editable={false}
             />
+
             <TextInput
               style={styles.input}
               placeholder="Kategori (mis. Akademik/Kegiatan)"
@@ -236,6 +297,16 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
           </View>
         </View>
       </Modal>
+
+      {/* DateTimePicker untuk tanggal */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={form.dateValue}
+          mode="date"
+          display="default"
+          onChange={onChangeDate}
+        />
+      )}
     </View>
   );
 };
