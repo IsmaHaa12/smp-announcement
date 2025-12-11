@@ -20,7 +20,6 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
-// ambil password admin dari .env
 const ADMIN_PASSWORD = process.env.EXPO_PUBLIC_ADMIN_PASSWORD || '';
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
