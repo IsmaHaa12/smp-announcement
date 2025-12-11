@@ -49,7 +49,6 @@ export default function App() {
   return false;
 };
 
-
   const logout = async () => {
     setIsAdmin(false);
     await AsyncStorage.setItem('isAdmin', 'false');
