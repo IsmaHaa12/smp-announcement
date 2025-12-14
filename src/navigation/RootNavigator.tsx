@@ -86,7 +86,7 @@ const RootNavigator = () => {
         options={{ title: 'Profil' }}
       />
 
-      {/* Tab Admin hanya muncul kalau admin sudah login */}
+
       {auth?.isAdmin && (
         <Tab.Screen
           name="Admin"
