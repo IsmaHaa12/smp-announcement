@@ -172,5 +172,4 @@ const styles = StyleSheet.create({
   ok: { backgroundColor: '#1F6FB2' },
   smallText: { color: '#fff', fontWeight: '600' },
 });
-
 export default WelcomeScreen;
