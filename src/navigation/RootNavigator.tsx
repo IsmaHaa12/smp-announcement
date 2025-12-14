@@ -86,7 +86,6 @@ const RootNavigator = () => {
         options={{ title: 'Profil' }}
       />
 
-
       {auth?.isAdmin && (
         <Tab.Screen
           name="Admin"
