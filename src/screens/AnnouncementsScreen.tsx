@@ -318,5 +318,4 @@ const styles = StyleSheet.create({
   buttonSave: { backgroundColor: '#1F6FB2' },
   buttonText: { color: '#fff', fontWeight: '600' },
 });
-
 export default AnnouncementsScreen;
