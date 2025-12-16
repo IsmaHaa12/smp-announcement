@@ -106,7 +106,6 @@ const HomeScreen = () => {
         </View>
       </LinearGradient>
 
-      {/* KONTEN PUTIH */}
       <View style={styles.content}>
         {/* Pengumuman terbaru */}
         <Text style={styles.sectionTitle}>Pengumuman terbaru</Text>
