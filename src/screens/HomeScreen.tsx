@@ -23,7 +23,6 @@ const HomeScreen = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
 
-  // animasi untuk blok agenda (naik-turun halus)
   const agendaOffset = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
