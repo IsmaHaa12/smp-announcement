@@ -126,7 +126,6 @@ const HomeScreen = () => {
           )}
         />
 
-        {/* Agenda terbaru (tanggal di samping judul + animasi) */}
         <Text style={[styles.sectionTitle, { marginTop: 4 }]}>
           Agenda terbaru
         </Text>
