@@ -88,7 +88,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.root}>
-      {/* HEADER: full gradient */}
       <LinearGradient
         colors={['#4CAF50', '#1F4F8B']} // hijau terang -> biru gelap, kontras tinggi
         start={{ x: 0, y: 0 }}
