@@ -16,7 +16,7 @@ type Announcement = {
 type Event = {
   id: string;
   title: string;
-  date: string;      // "YYYY-MM-DD"
+  date: string;
 };
 
 const HomeScreen = () => {
