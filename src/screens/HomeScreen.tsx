@@ -8,7 +8,7 @@ import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 type Announcement = {
   id: string;
   title: string;
-  date: string;      // "YYYY-MM-DD HH:mm" atau "YYYY-MM-DD"
+  date: string;
   category: string;
   content?: string;
 };
