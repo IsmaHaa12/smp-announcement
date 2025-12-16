@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, FlatList, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Animated,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AnnouncementCard from '../components/AnnouncementCard';
 import { db } from '../firebaseConfig';
@@ -78,12 +84,13 @@ const HomeScreen = () => {
   }, [agendaOffset]);
 
   const latestAnnouncements = announcements.slice(0, 5);
-  const latestEvents = events.slice(0, 3); // 3 agenda terbaru
+  const latestEvents = events.slice(0, 3);
 
   return (
     <View style={styles.root}>
+      {/* HEADER: full gradient */}
       <LinearGradient
-        colors={['#3C8D3F', '#1F6FB2']}
+        colors={['#4CAF50', '#1F4F8B']} // hijau terang -> biru gelap, kontras tinggi
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -102,6 +109,7 @@ const HomeScreen = () => {
         </View>
       </LinearGradient>
 
+      {/* KONTEN */}
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Pengumuman terbaru</Text>
         <Text style={styles.sectionDesc}>
@@ -129,7 +137,9 @@ const HomeScreen = () => {
           3 agenda sekolah terbaru.
         </Text>
 
-        <Animated.View style={{ transform: [{ translateY: agendaOffset }] }}>
+        <Animated.View
+          style={{ transform: [{ translateY: agendaOffset }], marginBottom: 16 }}
+        >
           {latestEvents.length === 0 ? (
             <Text style={styles.noEventText}>
               Belum ada agenda yang terjadwal.
