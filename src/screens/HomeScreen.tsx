@@ -130,7 +130,7 @@ const HomeScreen = () => {
           Agenda terbaru
         </Text>
         <Text style={styles.sectionDesc}>
-          3 agenda sekolah paling baru berdasarkan tanggal.
+          3 agenda sekolah terbaru.
         </Text>
 
         <Animated.View style={{ transform: [{ translateY: agendaOffset }] }}>
