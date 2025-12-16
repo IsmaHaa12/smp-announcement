@@ -63,7 +63,6 @@ const HomeScreen = () => {
     };
   }, []);
 
-  // Animasi naik-turun untuk agenda
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
