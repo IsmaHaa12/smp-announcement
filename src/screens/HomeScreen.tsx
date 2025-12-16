@@ -1,32 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import AnnouncementCard from '../components/AnnouncementCard';
 import { db } from '../firebaseConfig';
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-} from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 
 type Announcement = {
   id: string;
   title: string;
-  date: string;
+  date: string;      // "YYYY-MM-DD HH:mm" atau "YYYY-MM-DD"
   category: string;
   content?: string;
 };
 
+type Event = {
+  id: string;
+  title: string;
+  date: string;      // "YYYY-MM-DD"
+};
+
 const HomeScreen = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+
+  // animasi untuk blok agenda (naik-turun halus)
+  const agendaOffset = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const q = query(
+    // Listener pengumuman (terbaru duluan)
+    const q1 = query(
       collection(db, 'announcements'),
       orderBy('date', 'desc')
     );
-
-    const unsub = onSnapshot(q, (snapshot) => {
+    const unsub1 = onSnapshot(q1, (snapshot) => {
       const items: Announcement[] = snapshot.docs.map((d) => ({
         id: d.id,
         title: d.data().title,
@@ -37,37 +43,212 @@ const HomeScreen = () => {
       setAnnouncements(items);
     });
 
-    return () => unsub();
+    // Listener agenda (TERBARU DULUAN)
+    const q2 = query(
+      collection(db, 'events'),
+      orderBy('date', 'desc') // terbaru → lama
+    );
+    const unsub2 = onSnapshot(q2, (snapshot) => {
+      const items: Event[] = snapshot.docs.map((d) => ({
+        id: d.id,
+        title: d.data().title,
+        date: d.data().date,
+      }));
+      setEvents(items);
+    });
+
+    return () => {
+      unsub1();
+      unsub2();
+    };
   }, []);
 
-  const latest = announcements;
+  // Animasi naik-turun untuk agenda
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(agendaOffset, {
+          toValue: -4,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+        Animated.timing(agendaOffset, {
+          toValue: 0,
+          duration: 800,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [agendaOffset]);
+
+  const latestAnnouncements = announcements.slice(0, 5);
+  const latestEvents = events.slice(0, 3); // 3 agenda terbaru (tanggal paling besar)
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Pengumuman</Text>
-      <FlatList
-        data={latest}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <AnnouncementCard
-            title={item.title}
-            date={item.date}
-            category={item.category}
-            content={item.content}
-          />
-        )}
-      />
+    <View style={styles.root}>
+      {/* HEADER ATAS */}
+      <LinearGradient
+        colors={['#3C8D3F', '#1F6FB2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
+        <Text style={styles.schoolName}>SMP N 2 Ayah</Text>
+        <Text style={styles.subtitle}>Pengumuman & Agenda Sekolah</Text>
+        <View style={styles.chipRow}>
+          <View style={styles.chip}>
+            <Text style={styles.chipLabel}>Pengumuman</Text>
+            <Text style={styles.chipValue}>{announcements.length}</Text>
+          </View>
+          <View style={styles.chip}>
+            <Text style={styles.chipLabel}>Agenda</Text>
+            <Text style={styles.chipValue}>{events.length}</Text>
+          </View>
+        </View>
+      </LinearGradient>
+
+      {/* KONTEN PUTIH */}
+      <View style={styles.content}>
+        {/* Pengumuman terbaru */}
+        <Text style={styles.sectionTitle}>Pengumuman terbaru</Text>
+        <Text style={styles.sectionDesc}>
+          Menampilkan {latestAnnouncements.length} pengumuman terakhir.
+        </Text>
+
+        <FlatList
+          data={latestAnnouncements}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingTop: 8, paddingBottom: 8 }}
+          renderItem={({ item }) => (
+            <AnnouncementCard
+              title={item.title}
+              date={item.date}
+              category={item.category}
+              content={item.content}
+            />
+          )}
+        />
+
+        {/* Agenda terbaru (dengan animasi naik-turun) */}
+        <Text style={[styles.sectionTitle, { marginTop: 8 }]}>
+          Agenda terbaru
+        </Text>
+        <Text style={styles.sectionDesc}>
+          3 agenda sekolah paling baru berdasarkan tanggal.
+        </Text>
+
+        <Animated.View style={{ transform: [{ translateY: agendaOffset }] }}>
+          {latestEvents.length === 0 ? (
+            <Text style={styles.noEventText}>
+              Belum ada agenda yang terjadwal.
+            </Text>
+          ) : (
+            latestEvents.map((ev) => (
+              <View key={ev.id} style={styles.eventRow}>
+                <View style={styles.eventDot} />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.eventTitle}>{ev.title}</Text>
+                  <Text style={styles.eventDate}>{ev.date}</Text>
+                </View>
+              </View>
+            ))
+          )}
+        </Animated.View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#E6F7D9' },
+  root: {
+    flex: 1,
+    backgroundColor: '#E6F7D9',
+  },
   header: {
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+  },
+  schoolName: {
+    color: '#FFFFFF',
     fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontWeight: '700',
+  },
+  subtitle: {
+    color: '#E1F5E9',
+    fontSize: 14,
+    marginTop: 4,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    marginTop: 16,
+  },
+  chip: {
+    backgroundColor: '#FFFFFF22',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginRight: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chipLabel: {
+    color: '#F3FFEE',
+    fontSize: 12,
+    marginRight: 6,
+  },
+  chipValue: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: '#F3FFEE',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    marginTop: -4,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
     color: '#123028',
   },
+  sectionDesc: {
+    fontSize: 13,
+    color: '#5C7A6A',
+    marginTop: 2,
+  },
+  noEventText: {
+    fontSize: 13,
+    color: '#7A9585',
+    marginTop: 6,
+  },
+  eventRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 8,
+  },
+  eventDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#1F6FB2',
+    marginTop: 6,
+    marginRight: 8,
+  },
+  eventTitle: {
+    fontSize: 14,
+    color: '#234A38',
+    fontWeight: '500',
+  },
+  eventDate: {
+    fontSize: 12,
+    color: '#5C7A6A',
+    marginTop: 2,
+  },
 });
+
 export default HomeScreen;
