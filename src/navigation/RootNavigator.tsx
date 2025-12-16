@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image } from 'react-native';
+import { Image, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import AnnouncementsScreen from '../screens/AnnouncementsScreen';
@@ -56,7 +56,22 @@ const RootNavigator = () => {
             iconName = focused ? 'lock-open' : 'lock-closed';
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          // animasi scale icon tab
+          const scaleAnim = useRef(new Animated.Value(1)).current;
+
+          useEffect(() => {
+            Animated.spring(scaleAnim, {
+              toValue: focused ? 1.15 : 1,
+              friction: 5,
+              useNativeDriver: true,
+            }).start();
+          }, [focused, scaleAnim]);
+
+          return (
+            <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+              <Ionicons name={iconName} size={size} color={color} />
+            </Animated.View>
+          );
         },
       })}
     >
