@@ -109,7 +109,6 @@ const HomeScreen = () => {
         </View>
       </LinearGradient>
 
-      {/* KONTEN */}
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Pengumuman terbaru</Text>
         <Text style={styles.sectionDesc}>
