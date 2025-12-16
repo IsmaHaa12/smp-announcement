@@ -86,7 +86,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.root}>
-      {/* HEADER ATAS */}
       <LinearGradient
         colors={['#3C8D3F', '#1F6FB2']}
         start={{ x: 0, y: 0 }}
