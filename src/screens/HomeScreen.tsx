@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     marginTop: -12,
     paddingHorizontal: 16,
     paddingTop: 12,
-    paddingBottom: 24,
+    paddingBottom: 1,
   },
   sectionTitle: {
     fontSize: 18,
