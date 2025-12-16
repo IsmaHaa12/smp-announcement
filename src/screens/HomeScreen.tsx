@@ -27,7 +27,6 @@ const HomeScreen = () => {
   const agendaOffset = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Listener pengumuman (terbaru duluan)
     const q1 = query(
       collection(db, 'announcements'),
       orderBy('date', 'desc')
