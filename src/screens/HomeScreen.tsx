@@ -69,12 +69,12 @@ const HomeScreen = () => {
       Animated.sequence([
         Animated.timing(agendaOffset, {
           toValue: -4,
-          duration: 800,
+          duration: 2000,
           useNativeDriver: true,
         }),
         Animated.timing(agendaOffset, {
           toValue: 0,
-          duration: 800,
+          duration: 2000,
           useNativeDriver: true,
         }),
       ])
@@ -118,7 +118,7 @@ const HomeScreen = () => {
         <FlatList
           data={latestAnnouncements}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingTop: 8, paddingBottom: 8 }}
+          contentContainerStyle={{ paddingTop: 8, paddingBottom: 4 }}
           renderItem={({ item }) => (
             <AnnouncementCard
               title={item.title}
@@ -130,7 +130,7 @@ const HomeScreen = () => {
         />
 
         {/* Agenda terbaru (tanggal di samping judul + animasi) */}
-        <Text style={[styles.sectionTitle, { marginTop: 8 }]}>
+        <Text style={[styles.sectionTitle, { marginTop: 4 }]}>
           Agenda terbaru
         </Text>
         <Text style={styles.sectionDesc}>
@@ -212,6 +212,7 @@ const styles = StyleSheet.create({
     marginTop: -12,
     paddingHorizontal: 16,
     paddingTop: 12,
+    paddingBottom: 24,
   },
   sectionTitle: {
     fontSize: 18,
