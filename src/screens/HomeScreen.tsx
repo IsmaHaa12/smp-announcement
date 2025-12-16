@@ -46,7 +46,7 @@ const HomeScreen = () => {
     // Listener agenda (TERBARU DULUAN)
     const q2 = query(
       collection(db, 'events'),
-      orderBy('date', 'desc') // terbaru → lama
+      orderBy('date', 'desc')
     );
     const unsub2 = onSnapshot(q2, (snapshot) => {
       const items: Event[] = snapshot.docs.map((d) => ({
@@ -82,7 +82,7 @@ const HomeScreen = () => {
   }, [agendaOffset]);
 
   const latestAnnouncements = announcements.slice(0, 5);
-  const latestEvents = events.slice(0, 3); // 3 agenda terbaru (tanggal paling besar)
+  const latestEvents = events.slice(0, 3); // 3 agenda terbaru
 
   return (
     <View style={styles.root}>
@@ -129,7 +129,7 @@ const HomeScreen = () => {
           )}
         />
 
-        {/* Agenda terbaru (dengan animasi naik-turun) */}
+        {/* Agenda terbaru (tanggal di samping judul + animasi) */}
         <Text style={[styles.sectionTitle, { marginTop: 8 }]}>
           Agenda terbaru
         </Text>
@@ -146,9 +146,11 @@ const HomeScreen = () => {
             latestEvents.map((ev) => (
               <View key={ev.id} style={styles.eventRow}>
                 <View style={styles.eventDot} />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.eventTitle}>{ev.title}</Text>
-                  <Text style={styles.eventDate}>{ev.date}</Text>
+                <View style={styles.eventTextRow}>
+                  <Text style={styles.eventTitle} numberOfLines={1}>
+                    {ev.title}
+                  </Text>
+                  <Text style={styles.eventDateInline}>{ev.date}</Text>
                 </View>
               </View>
             ))
@@ -207,9 +209,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3FFEE',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    marginTop: -4,
+    marginTop: -12,
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 12,
   },
   sectionTitle: {
     fontSize: 18,
@@ -228,7 +230,7 @@ const styles = StyleSheet.create({
   },
   eventRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginTop: 8,
   },
   eventDot: {
@@ -236,18 +238,23 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#1F6FB2',
-    marginTop: 6,
     marginRight: 8,
+  },
+  eventTextRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   eventTitle: {
     fontSize: 14,
     color: '#234A38',
     fontWeight: '500',
+    flexShrink: 1,
   },
-  eventDate: {
+  eventDateInline: {
     fontSize: 12,
     color: '#5C7A6A',
-    marginTop: 2,
+    marginLeft: 8,
   },
 });
 
