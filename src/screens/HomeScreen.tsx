@@ -43,7 +43,6 @@ const HomeScreen = () => {
       setAnnouncements(items);
     });
 
-    // Listener agenda (TERBARU DULUAN)
     const q2 = query(
       collection(db, 'events'),
       orderBy('date', 'desc')
