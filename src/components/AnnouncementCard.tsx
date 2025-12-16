@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Text, StyleSheet, Animated, View } from 'react-native';
+import { Text, StyleSheet, Animated, View, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 type Props = {
@@ -11,6 +11,7 @@ type Props = {
 
 const AnnouncementCard: React.FC<Props> = ({ title, date, category, content }) => {
   const opacity = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.timing(opacity, {
@@ -20,28 +21,51 @@ const AnnouncementCard: React.FC<Props> = ({ title, date, category, content }) =
     }).start();
   }, [opacity]);
 
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.97,
+      useNativeDriver: true,
+      friction: 6,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 6,
+    }).start();
+  };
+
   return (
-    <Animated.View style={[styles.shadowWrap, { opacity }]}>
-      <LinearGradient
-        colors={['#FFFFFF', '#F3FFEE']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.card}
+    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
+      <Animated.View
+        style={[
+          styles.shadowWrap,
+          { opacity, transform: [{ scale }] },
+        ]}
       >
-        <View style={styles.headerRow}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              {category?.[0] ?? '?'}
-            </Text>
+        <LinearGradient
+          colors={['#FFFFFF', '#F3FFEE']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.card}
+        >
+          <View style={styles.headerRow}>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {category?.[0] ?? '?'}
+              </Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.date}>{date}</Text>
+            </View>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.title}>{title}</Text>
-            <Text style={styles.date}>{date}</Text>
-          </View>
-        </View>
-        {content ? <Text style={styles.content}>{content}</Text> : null}
-      </LinearGradient>
-    </Animated.View>
+          {content ? <Text style={styles.content}>{content}</Text> : null}
+        </LinearGradient>
+      </Animated.View>
+    </Pressable>
   );
 };
 
