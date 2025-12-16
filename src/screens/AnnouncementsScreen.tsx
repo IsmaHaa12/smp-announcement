@@ -24,7 +24,7 @@ import {
 type Announcement = {
   id: string;
   title: string;
-  date: string;
+  date: string;      // "YYYY-MM-DD HH:mm"
   category: string;
   content?: string;
 };
@@ -45,10 +45,22 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     content: '',
   });
 
+  // helper: sekarang dalam format "YYYY-MM-DD HH:mm"
+  const getNowString = () => {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+  };
+
+  // === LOAD DATA DARI FIRESTORE (REALTIME) ===
   useEffect(() => {
     const q = query(
       collection(db, 'announcements'),
-      orderBy('date', 'desc')
+      orderBy('date', 'desc')  // string "YYYY-MM-DD HH:mm" → terbaru duluan
     );
 
     const unsub = onSnapshot(q, (snapshot) => {
@@ -82,7 +94,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
       } else {
         await addDoc(collection(db, 'announcements'), {
           title: form.title,
-          date: form.date,
+          date: form.date, // sudah berisi "YYYY-MM-DD HH:mm"
           category: form.category || 'Umum',
           content: form.content,
         });
@@ -110,7 +122,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     setEditingId(item.id);
     setForm({
       title: item.title,
-      date: item.date,
+      date: item.date,       // string lama (sudah termasuk jam)
       category: item.category,
       content: item.content ?? '',
     });
@@ -138,7 +150,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
           <View style={styles.cardWrapper}>
             <AnnouncementCard
               title={item.title}
-              date={item.date}
+              date={item.date}          // contoh: 2025-12-16 15:10
               category={item.category}
               content={item.content}
             />
@@ -164,7 +176,12 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
           style={styles.fab}
           onPress={() => {
             setEditingId(null);
-            setForm({ title: '', date: '', category: '', content: '' });
+            setForm({
+              title: '',
+              date: getNowString(),   // auto isi tanggal + jam sekarang
+              category: '',
+              content: '',
+            });
             setModalVisible(true);
           }}
         >
@@ -195,7 +212,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Tanggal (yyyy-mm-dd)"
+              placeholder="Tanggal (YYYY-MM-DD HH:mm)"
               placeholderTextColor="#7A9585"
               value={form.date}
               onChangeText={(text) => setForm({ ...form, date: text })}
@@ -318,4 +335,5 @@ const styles = StyleSheet.create({
   buttonSave: { backgroundColor: '#1F6FB2' },
   buttonText: { color: '#fff', fontWeight: '600' },
 });
+
 export default AnnouncementsScreen;
