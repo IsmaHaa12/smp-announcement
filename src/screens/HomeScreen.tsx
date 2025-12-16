@@ -107,7 +107,6 @@ const HomeScreen = () => {
       </LinearGradient>
 
       <View style={styles.content}>
-        {/* Pengumuman terbaru */}
         <Text style={styles.sectionTitle}>Pengumuman terbaru</Text>
         <Text style={styles.sectionDesc}>
           Menampilkan {latestAnnouncements.length} pengumuman terakhir.
