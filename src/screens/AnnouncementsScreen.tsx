@@ -24,7 +24,7 @@ import {
 type Announcement = {
   id: string;
   title: string;
-  date: string;      // "YYYY-MM-DD HH:mm"
+  date: string;
   category: string;
   content?: string;
 };
