@@ -101,7 +101,7 @@ export default function App() {
   };
 
   if (loading) {
-    return null; // bisa diganti Splash / ActivityIndicator
+    return null;
   }
 
   return (
