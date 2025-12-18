@@ -76,7 +76,6 @@ export default function App() {
       const isAdminAccount = cred.user.email === ADMIN_EMAIL;
 
       if (!isAdminAccount) {
-        // kalau bukan email admin, langsung logout lagi
         await signOut(auth);
         setUser(null);
         setIsAdmin(false);
