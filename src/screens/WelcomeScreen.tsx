@@ -20,32 +20,28 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
-const ADMIN_PASSWORD = process.env.EXPO_PUBLIC_ADMIN_PASSWORD || '';
-
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const auth = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
+  const [adminEmail, setAdminEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleGuest = async () => {
     await AsyncStorage.setItem('isGuest', 'true');
-    await AsyncStorage.setItem('isAdmin', 'false');
     navigation.replace('Main');
   };
 
   const handleAdminLogin = async () => {
-    if (password !== ADMIN_PASSWORD) {
-      Alert.alert('Gagal', 'Password admin salah');
+    if (!auth) return;
+
+    const ok = await auth.loginAsAdmin(adminEmail, password);
+    if (!ok) {
+      Alert.alert('Gagal', 'Email atau password admin salah');
       return;
     }
 
-    if (auth) {
-      await auth.loginAsAdmin(password);
-    } else {
-      await AsyncStorage.setItem('isAdmin', 'true');
-      await AsyncStorage.setItem('isGuest', 'false');
-    }
-
+    await AsyncStorage.setItem('isGuest', 'false');
+    setAdminEmail('');
     setPassword('');
     setModalVisible(false);
     navigation.replace('Main');
@@ -84,6 +80,15 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Masuk sebagai Admin</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Email admin"
+              placeholderTextColor="#7A9585"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={adminEmail}
+              onChangeText={setAdminEmail}
+            />
             <TextInput
               style={styles.input}
               placeholder="Password admin"
@@ -172,4 +177,5 @@ const styles = StyleSheet.create({
   ok: { backgroundColor: '#1F6FB2' },
   smallText: { color: '#fff', fontWeight: '600' },
 });
+
 export default WelcomeScreen;
