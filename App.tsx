@@ -35,7 +35,7 @@ export default function App() {
   const [initialRoute, setInitialRoute] = useState<'Welcome' | 'Main'>('Welcome');
   const [loading, setLoading] = useState(true);
 
-  const ADMIN_EMAIL = 'admin@smp2ayah.sch.id'; // ganti sesuai akun admin di Firebase
+  const ADMIN_EMAIL = 'admin@smp2ayah.sch.id';
 
   useEffect(() => {
     const checkTimeout = async () => {
