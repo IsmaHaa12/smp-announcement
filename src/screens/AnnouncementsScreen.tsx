@@ -45,7 +45,6 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     content: '',
   });
 
-  // helper: sekarang dalam format "YYYY-MM-DD HH:mm"
   const getNowString = () => {
     const d = new Date();
     const yyyy = d.getFullYear();
