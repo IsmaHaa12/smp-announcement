@@ -44,7 +44,7 @@ export default function App() {
       const lastActive = parseInt(stored, 10);
       const now = Date.now();
       const diffMinutes = (now - lastActive) / 1000 / 60;
-      return diffMinutes > 1; // > 1 menit = expired
+      return diffMinutes > 1;
     };
 
     const sub = onAuthStateChanged(auth, async currentUser => {
