@@ -1,6 +1,10 @@
 import React, { useContext, useRef, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, Animated } from 'react-native';
+import {
+  Image,
+  Animated,
+  TouchableOpacity,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import AnnouncementsScreen from '../screens/AnnouncementsScreen';
@@ -24,16 +28,25 @@ const RootNavigator = () => {
 
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      screenOptions={({ route, navigation }) => ({
         headerStyle: { backgroundColor: '#DDF3C8' },
         headerTitleAlign: 'center',
         headerTitle: 'SMP N 2 Ayah',
         headerLeft: () => (
-          <Image
-            source={require('../assets/logo-smpn2ayah.png')}
-            style={{ width: 28, height: 28, marginLeft: 12 }}
-            resizeMode="contain"
-          />
+          <TouchableOpacity
+            onPress={() =>
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Welcome' as never }],
+              })
+            }
+          >
+            <Image
+              source={require('../assets/logo-smpn2ayah.png')}
+              style={{ width: 28, height: 28, marginLeft: 12 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         ),
         tabBarActiveTintColor: '#1F6FB2',
         tabBarInactiveTintColor: '#5C7A6A',
@@ -56,7 +69,6 @@ const RootNavigator = () => {
             iconName = focused ? 'lock-open' : 'lock-closed';
           }
 
-          // animasi scale icon tab
           const scaleAnim = useRef(new Animated.Value(1)).current;
 
           useEffect(() => {
