@@ -150,7 +150,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
           <View style={styles.cardWrapper}>
             <AnnouncementCard
               title={item.title}
-              date={item.date}          // contoh: 2025-12-16 15:10
+              date={item.date}
               category={item.category}
               content={item.content}
             />
