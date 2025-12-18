@@ -1,14 +1,16 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../App';
 
 const AdminLoginScreen = () => {
   const auth = useContext(AuthContext);
   const [password, setPassword] = useState('');
+  const navigation = useNavigation();
 
   const handleLogin = async () => {
     if (!auth) return;
-    const ok = await auth.loginAsAdmin(password);
+    const ok = await auth.loginAsAdmin('admin@smp2ayah.sch.id', password);
     if (!ok) {
       Alert.alert('Gagal', 'Password admin salah');
     } else {
@@ -21,6 +23,10 @@ const AdminLoginScreen = () => {
     if (!auth) return;
     await auth.logout();
     Alert.alert('Logout', 'Anda keluar dari mode admin');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Welcome' as never }],
+    });
   };
 
   if (auth?.isAdmin) {
@@ -81,4 +87,5 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: '#fff', fontWeight: '600' },
 });
+
 export default AdminLoginScreen;
