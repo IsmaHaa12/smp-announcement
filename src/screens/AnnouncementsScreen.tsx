@@ -60,7 +60,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
   useEffect(() => {
     const q = query(
       collection(db, 'announcements'),
-      orderBy('date', 'desc')  // string "YYYY-MM-DD HH:mm" → terbaru duluan
+      orderBy('date', 'desc')
     );
 
     const unsub = onSnapshot(q, (snapshot) => {
