@@ -94,7 +94,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
       } else {
         await addDoc(collection(db, 'announcements'), {
           title: form.title,
-          date: form.date, // sudah berisi "YYYY-MM-DD HH:mm"
+          date: form.date,
           category: form.category || 'Umum',
           content: form.content,
         });
