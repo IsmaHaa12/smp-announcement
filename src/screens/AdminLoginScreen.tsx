@@ -1,12 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../App';
 
 const AdminLoginScreen = () => {
   const auth = useContext(AuthContext);
   const [password, setPassword] = useState('');
-  const navigation = useNavigation();
 
   const handleLogin = async () => {
     if (!auth) return;
@@ -21,12 +19,9 @@ const AdminLoginScreen = () => {
 
   const handleLogout = async () => {
     if (!auth) return;
-    await auth.logout();
+    await auth.logout(); // cukup logout, jangan reset navigation
     Alert.alert('Logout', 'Anda keluar dari mode admin');
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Welcome' as never }],
-    });
+    // App.tsx akan otomatis ganti ke Welcome karena user = null
   };
 
   if (auth?.isAdmin) {
