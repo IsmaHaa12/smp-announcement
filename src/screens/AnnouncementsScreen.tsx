@@ -122,7 +122,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
     setEditingId(item.id);
     setForm({
       title: item.title,
-      date: item.date,       // string lama (sudah termasuk jam)
+      date: item.date,
       category: item.category,
       content: item.content ?? '',
     });
