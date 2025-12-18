@@ -111,7 +111,7 @@ const HomeScreen = () => {
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Pengumuman terbaru</Text>
         <Text style={styles.sectionDesc}>
-          Menampilkan {latestAnnouncements.length} pengumuman terakhir.
+          {latestAnnouncements.length} pengumuman terakhir.
         </Text>
 
         <FlatList
