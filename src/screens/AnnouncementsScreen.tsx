@@ -178,7 +178,7 @@ const AnnouncementsScreen: React.FC<Props> = ({ isAdmin }) => {
             setEditingId(null);
             setForm({
               title: '',
-              date: getNowString(),   // auto isi tanggal + jam sekarang
+              date: getNowString(),
               category: '',
               content: '',
             });
