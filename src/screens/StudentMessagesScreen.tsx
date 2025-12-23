@@ -1,4 +1,3 @@
-// src/screens/StudentMessagesScreen.tsx
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
@@ -19,24 +18,37 @@ const StudentMessagesScreen = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authCtx?.user) return;
+    // kalau belum login siswa, jangan query Firestore
+    if (!authCtx?.user) {
+      setLoading(false);
+      return;
+    }
 
+    // QUERY: pesan hanya untuk UID siswa ini
     const q = query(
       collection(db, 'studentMessages'),
       where('userId', '==', authCtx.user.uid),
+      // sementara bisa hapus orderBy kalau field createdAt belum ada di semua dokumen
       orderBy('createdAt', 'desc')
     );
 
-    const unsub = onSnapshot(q, snap => {
-      const items: StudentMessage[] = snap.docs.map(d => ({
-        id: d.id,
-        title: d.data().title,
-        body: d.data().body,
-        createdAt: d.data().createdAt,
-      }));
-      setMessages(items);
-      setLoading(false);
-    });
+    const unsub = onSnapshot(
+      q,
+      snap => {
+        const items: StudentMessage[] = snap.docs.map(d => ({
+          id: d.id,
+          title: d.data().title,
+          body: d.data().body,
+          createdAt: d.data().createdAt,
+        }));
+        setMessages(items);
+        setLoading(false);
+      },
+      err => {
+        console.log('studentMessages error:', err);
+        setLoading(false);
+      }
+    );
 
     return unsub;
   }, [authCtx?.user]);
