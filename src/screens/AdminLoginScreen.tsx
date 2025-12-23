@@ -1,3 +1,4 @@
+// src/screens/AdminLoginScreen.tsx
 import React, { useContext, useState } from 'react';
 import {
   View,
@@ -23,7 +24,6 @@ const AdminLoginScreen = () => {
 
   const handleLogin = async () => {
     if (!auth) return;
-    // di Welcome admin login pakai email, di sini cukup password saja
     const ok = await auth.loginAsAdmin('admin@smp2ayah.sch.id', adminPassword);
     if (!ok) {
       Alert.alert('Gagal', 'Password admin salah');
@@ -52,8 +52,6 @@ const AdminLoginScreen = () => {
     try {
       setSending(true);
 
-      // versi simple: simpan email siswa di dokumen, dan di StudentMessagesScreen
-      // query pakai field "studentEmail" bukan userId
       await addDoc(collection(db, 'studentMessages'), {
         studentEmail: studentEmail.trim().toLowerCase(),
         title,
@@ -72,7 +70,6 @@ const AdminLoginScreen = () => {
     }
   };
 
-  // Kalau admin sudah login → tampilkan panel admin + kirim pesan
   if (auth?.isAdmin) {
     return (
       <View style={styles.container}>
@@ -132,7 +129,6 @@ const AdminLoginScreen = () => {
     );
   }
 
-  // Kalau belum login admin → form login admin seperti biasa
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login Admin</Text>
