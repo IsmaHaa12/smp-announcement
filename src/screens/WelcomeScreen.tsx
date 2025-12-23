@@ -1,3 +1,4 @@
+// src/screens/WelcomeScreen.tsx
 import React, { useContext, useState } from 'react';
 import {
   View,
@@ -22,9 +23,15 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const auth = useContext(AuthContext);
-  const [modalVisible, setModalVisible] = useState(false);
+
+  const [adminModalVisible, setAdminModalVisible] = useState(false);
+  const [studentModalVisible, setStudentModalVisible] = useState(false);
+
   const [adminEmail, setAdminEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+
+  const [studentEmail, setStudentEmail] = useState('');
+  const [studentPassword, setStudentPassword] = useState('');
 
   const handleGuest = async () => {
     await AsyncStorage.setItem('isGuest', 'true');
@@ -34,7 +41,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const handleAdminLogin = async () => {
     if (!auth) return;
 
-    const ok = await auth.loginAsAdmin(adminEmail, password);
+    const ok = await auth.loginAsAdmin(adminEmail, adminPassword);
     if (!ok) {
       Alert.alert('Gagal', 'Email atau password admin salah');
       return;
@@ -42,8 +49,24 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
     await AsyncStorage.setItem('isGuest', 'false');
     setAdminEmail('');
-    setPassword('');
-    setModalVisible(false);
+    setAdminPassword('');
+    setAdminModalVisible(false);
+    navigation.replace('Main');
+  };
+
+  const handleStudentLogin = async () => {
+    if (!auth) return;
+
+    const ok = await auth.loginAsStudent(studentEmail, studentPassword);
+    if (!ok) {
+      Alert.alert('Gagal', 'Email atau password siswa salah');
+      return;
+    }
+
+    await AsyncStorage.setItem('isGuest', 'false');
+    setStudentEmail('');
+    setStudentPassword('');
+    setStudentModalVisible(false);
     navigation.replace('Main');
   };
 
@@ -59,23 +82,31 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
       <TouchableOpacity
         style={[styles.button, styles.adminButton]}
-        onPress={() => setModalVisible(true)}
+        onPress={() => setAdminModalVisible(true)}
       >
         <Text style={styles.buttonText}>Mode Admin</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[styles.button, styles.guestButton]}
-        onPress={handleGuest}
+        onPress={() => setStudentModalVisible(true)}
       >
-        <Text style={styles.buttonText}>Masuk</Text>
+        <Text style={styles.buttonText}>Login Siswa</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={[styles.button, styles.guestButton]}
+        onPress={handleGuest}
+      >
+        <Text style={styles.buttonText}>Masuk sebagai Tamu</Text>
+      </TouchableOpacity>
+
+      {/* Modal Admin */}
       <Modal
-        visible={modalVisible}
+        visible={adminModalVisible}
         animationType="slide"
         transparent
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={() => setAdminModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -94,19 +125,64 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
               placeholder="Password admin"
               placeholderTextColor="#7A9585"
               secureTextEntry
-              value={password}
-              onChangeText={setPassword}
+              value={adminPassword}
+              onChangeText={setAdminPassword}
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity
                 style={[styles.smallButton, styles.cancel]}
-                onPress={() => setModalVisible(false)}
+                onPress={() => setAdminModalVisible(false)}
               >
                 <Text style={styles.smallText}>Batal</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.smallButton, styles.ok]}
                 onPress={handleAdminLogin}
+              >
+                <Text style={styles.smallText}>Login</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Siswa */}
+      <Modal
+        visible={studentModalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setStudentModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Masuk sebagai Siswa</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Email siswa"
+              placeholderTextColor="#7A9585"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={studentEmail}
+              onChangeText={setStudentEmail}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password siswa"
+              placeholderTextColor="#7A9585"
+              secureTextEntry
+              value={studentPassword}
+              onChangeText={setStudentPassword}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.smallButton, styles.cancel]}
+                onPress={() => setStudentModalVisible(false)}
+              >
+                <Text style={styles.smallText}>Batal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.smallButton, styles.ok]}
+                onPress={handleStudentLogin}
               >
                 <Text style={styles.smallText}>Login</Text>
               </TouchableOpacity>
