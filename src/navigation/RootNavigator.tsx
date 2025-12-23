@@ -1,3 +1,4 @@
+// src/navigation/RootNavigator.tsx
 import React, { useContext, useRef, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
@@ -11,6 +12,7 @@ import AnnouncementsScreen from '../screens/AnnouncementsScreen';
 import AgendaScreen from '../screens/AgendaScreen';
 import SchoolProfileScreen from '../screens/SchoolProfileScreen';
 import AdminLoginScreen from '../screens/AdminLoginScreen';
+import StudentMessagesScreen from '../screens/StudentMessagesScreen';
 import { AuthContext } from '../../App';
 
 export type RootTabParamList = {
@@ -18,6 +20,7 @@ export type RootTabParamList = {
   Announcements: undefined;
   Agenda: undefined;
   Profile: undefined;
+  StudentMessages: undefined;
   Admin: undefined;
 };
 
@@ -65,6 +68,8 @@ const RootNavigator = () => {
             iconName = focused ? 'calendar' : 'calendar-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'school' : 'school-outline';
+          } else if (route.name === 'StudentMessages') {
+            iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
           } else {
             iconName = focused ? 'lock-open' : 'lock-closed';
           }
@@ -112,6 +117,14 @@ const RootNavigator = () => {
         component={SchoolProfileScreen}
         options={{ title: 'Profil' }}
       />
+
+      {auth?.isStudent && (
+        <Tab.Screen
+          name="StudentMessages"
+          component={StudentMessagesScreen}
+          options={{ title: 'Pesan Siswa' }}
+        />
+      )}
 
       {auth?.isAdmin && (
         <Tab.Screen
