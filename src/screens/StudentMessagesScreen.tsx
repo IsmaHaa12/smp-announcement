@@ -1,3 +1,4 @@
+// src/screens/StudentMessagesScreen.tsx
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
@@ -18,17 +19,16 @@ const StudentMessagesScreen = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // kalau belum login siswa, jangan query Firestore
-    if (!authCtx?.user) {
+    if (!authCtx?.user || !authCtx.user.email) {
       setLoading(false);
       return;
     }
 
-    // QUERY: pesan hanya untuk UID siswa ini
+    const email = authCtx.user.email.toLowerCase();
+
     const q = query(
       collection(db, 'studentMessages'),
-      where('userId', '==', authCtx.user.uid),
-      // sementara bisa hapus orderBy kalau field createdAt belum ada di semua dokumen
+      where('studentEmail', '==', email),
       orderBy('createdAt', 'desc')
     );
 
