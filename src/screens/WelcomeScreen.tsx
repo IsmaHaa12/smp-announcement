@@ -146,7 +146,6 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         </View>
       </Modal>
 
-      {/* Modal Siswa */}
       <Modal
         visible={studentModalVisible}
         animationType="slide"
