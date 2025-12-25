@@ -65,7 +65,7 @@ const AdminSendMessageScreen = () => {
       const userId = userDoc.id;
 
       await addDoc(collection(db, 'studentMessages'), {
-        userId,                // uid / id siswa
+        userId,
         title,
         body,
         createdAt: serverTimestamp(),
