@@ -53,7 +53,6 @@ const AdminSendMessageScreen = () => {
     try {
       setLoading(true);
 
-      // cari userId berdasarkan email siswa
       const uq = query(collection(db, 'users'), where('email', '==', selectedEmail));
       const usnap = await getDocs(uq);
       if (usnap.empty) {
