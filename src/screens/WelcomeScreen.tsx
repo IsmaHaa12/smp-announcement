@@ -101,7 +101,6 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.buttonText}>Masuk sebagai Tamu</Text>
       </TouchableOpacity>
 
-      {/* Modal Admin */}
       <Modal
         visible={adminModalVisible}
         animationType="slide"
