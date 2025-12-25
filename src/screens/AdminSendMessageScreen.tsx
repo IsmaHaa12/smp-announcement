@@ -22,7 +22,7 @@ const AdminSendMessageScreen = () => {
   // kalau belum punya, nanti pemilihan siswa bisa pakai input manual userId saja.
   useEffect(() => {
     // contoh kalau kamu sudah punya koleksi "users" dengan field role: "student"
-    // kalau belum, bagian ini bisa di-skip
+
     const loadStudents = async () => {
       try {
         const q = query(collection(db, 'users'), where('role', '==', 'student'));
