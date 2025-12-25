@@ -69,7 +69,7 @@ const AdminSendMessageScreen = () => {
         title,
         body,
         createdAt: serverTimestamp(),
-      }); // [web:475][web:474]
+      });
 
       Alert.alert('Sukses', 'Pesan berhasil dikirim ke siswa.');
       setTitle('');
