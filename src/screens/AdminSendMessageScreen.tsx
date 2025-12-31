@@ -19,8 +19,6 @@ const AdminSendMessageScreen = () => {
   const [loading, setLoading] = useState(false);
 
   // OPSIONAL: kalau kamu punya koleksi "users" berisi semua siswa, bisa load di sini
-  // kalau belum punya, nanti pemilihan siswa bisa pakai input manual userId saja.
-  useEffect(() => {
     const loadStudents = async () => {
       try {
         const q = query(collection(db, 'users'), where('role', '==', 'student'));
