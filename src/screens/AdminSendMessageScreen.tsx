@@ -6,7 +6,7 @@ import { db } from '../firebaseConfig';
 import { AuthContext } from '../../App';
 
 type Student = {
-  id: string;
+  id: string;      // document id / uid
   email: string;
 };
 
@@ -18,6 +18,7 @@ const AdminSendMessageScreen = () => {
   const [body, setBody] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
     const loadStudents = async () => {
       try {
         const q = query(collection(db, 'users'), where('role', '==', 'student'));
