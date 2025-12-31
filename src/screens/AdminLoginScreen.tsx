@@ -14,7 +14,6 @@ import { db } from '../firebaseConfig';
 const AdminLoginScreen = () => {
   const auth = useContext(AuthContext);
   const [adminPassword, setAdminPassword] = useState('');
-
   const [studentEmail, setStudentEmail] = useState('');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
