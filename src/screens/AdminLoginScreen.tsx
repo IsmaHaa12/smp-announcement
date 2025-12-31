@@ -15,7 +15,6 @@ const AdminLoginScreen = () => {
   const auth = useContext(AuthContext);
   const [adminPassword, setAdminPassword] = useState('');
 
-  // form kirim pesan siswa
   const [studentEmail, setStudentEmail] = useState('');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
