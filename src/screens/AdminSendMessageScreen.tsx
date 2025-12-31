@@ -6,7 +6,7 @@ import { db } from '../firebaseConfig';
 import { AuthContext } from '../../App';
 
 type Student = {
-  id: string;      // document id / uid
+  id: string;
   email: string;
 };
 
