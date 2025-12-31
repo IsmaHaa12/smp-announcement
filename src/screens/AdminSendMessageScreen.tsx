@@ -18,7 +18,6 @@ const AdminSendMessageScreen = () => {
   const [body, setBody] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // OPSIONAL: kalau kamu punya koleksi "users" berisi semua siswa, bisa load di sini
     const loadStudents = async () => {
       try {
         const q = query(collection(db, 'users'), where('role', '==', 'student'));
