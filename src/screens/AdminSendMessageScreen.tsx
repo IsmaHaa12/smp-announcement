@@ -1,4 +1,3 @@
-// src/screens/AdminSendMessageScreen.tsx
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { collection, addDoc, getDocs, query, where, serverTimestamp } from 'firebase/firestore';
